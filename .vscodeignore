@@ -1,0 +1,15 @@
+node_modules/**
+src/**
+webview/**
+test/**
+scripts/**
+.test-data/**
+.vscode-test/**
+.vscode/**
+docs/**
+*.vsix
+tsconfig.json
+package-lock.json
+.gitignore
+dist/*.map
+dist/host-test.js

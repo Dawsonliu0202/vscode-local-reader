@@ -1,0 +1,250 @@
+{
+  "name": "local-reader",
+  "displayName": "Local Reader 本地阅读",
+  "description": "离线 EPUB/TXT 书架、原生终端分栏阅读、阅读记录与时长分析。",
+  "version": "0.4.1",
+  "publisher": "workspace-tools",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Dawsonliu0202/vscode-local-reader.git"
+  },
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "extensionKind": [
+    "ui"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onView:localReader.sidebar",
+    "onView:localReader.panel",
+    "onView:localReader.libraryView"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": true
+    },
+    "virtualWorkspaces": false
+  },
+  "scripts": {
+    "check": "tsc --noEmit",
+    "build": "node scripts/build.mjs",
+    "watch": "node scripts/build.mjs --watch",
+    "test": "tsx --test test/*.test.ts",
+    "test:host": "node scripts/test-host.mjs",
+    "vscode:prepublish": "npm run check && npm run build",
+    "package": "vsce package --no-dependencies --allow-missing-repository --out local-reader-0.4.1.vsix",
+    "test:ui": "tsx --test test/ui.spec.ts"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "localReader.import",
+        "title": "导入本地电子书",
+        "category": "Local Reader",
+        "icon": "$(add)"
+      },
+      {
+        "command": "localReader.library",
+        "title": "打开书架",
+        "category": "Local Reader",
+        "icon": "$(list-tree)"
+      },
+      {
+        "command": "localReader.resume",
+        "title": "继续阅读",
+        "category": "Local Reader",
+        "icon": "$(play)"
+      },
+      {
+        "command": "localReader.hide",
+        "title": "隐藏全部内容",
+        "category": "Local Reader",
+        "icon": "$(dash)"
+      },
+      {
+        "command": "localReader.statistics",
+        "title": "记录与统计",
+        "category": "Local Reader"
+      },
+      {
+        "command": "localReader.mode",
+        "title": "切换阅读模式",
+        "category": "Local Reader"
+      },
+      {
+        "command": "localReader.previousPage",
+        "title": "上一页",
+        "category": "Local Reader"
+      },
+      {
+        "command": "localReader.nextPage",
+        "title": "下一页",
+        "category": "Local Reader"
+      },
+      {
+        "command": "localReader.previousChapter",
+        "title": "上一章",
+        "category": "Local Reader"
+      },
+      {
+        "command": "localReader.nextChapter",
+        "title": "下一章",
+        "category": "Local Reader"
+      },
+      {
+        "command": "localReader.toc",
+        "title": "打开目录",
+        "category": "Local Reader"
+      },
+      {
+        "command": "localReader.settings",
+        "title": "阅读设置",
+        "category": "Local Reader",
+        "icon": "$(settings-gear)"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "localReader.resume",
+        "key": "ctrl+alt+r",
+        "mac": "cmd+alt+r"
+      },
+      {
+        "command": "localReader.hide",
+        "key": "ctrl+alt+h",
+        "mac": "cmd+alt+h",
+        "when": "localReader.visible"
+      }
+    ],
+    "viewsContainers": {
+      "panel": [
+        {
+          "id": "local-reader-output",
+          "title": "Task Output",
+          "icon": "media/notes.svg"
+        }
+      ],
+      "activitybar": [
+        {
+          "id": "local-reader-library",
+          "title": "Local Reader",
+          "icon": "media/library.svg"
+        }
+      ]
+    },
+    "views": {
+      "explorer": [
+        {
+          "id": "localReader.sidebar",
+          "name": "Workspace Notes",
+          "type": "webview",
+          "visibility": "collapsed"
+        }
+      ],
+      "local-reader-output": [
+        {
+          "id": "localReader.panel",
+          "name": "Task Output",
+          "type": "webview",
+          "when": "localReader.panelActive",
+          "initialSize": 5
+        }
+      ],
+      "local-reader-library": [
+        {
+          "id": "localReader.libraryView",
+          "name": "书架管理",
+          "type": "webview"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "localReader.resume",
+          "when": "view == localReader.sidebar || view == localReader.panel || view == localReader.libraryView",
+          "group": "navigation"
+        },
+        {
+          "command": "localReader.hide",
+          "when": "view == localReader.sidebar || view == localReader.panel || view == localReader.libraryView",
+          "group": "navigation"
+        },
+        {
+          "command": "localReader.library",
+          "when": "view == localReader.sidebar || view == localReader.panel || view == localReader.libraryView"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Local Reader",
+      "properties": {
+        "localReader.fontSize": {
+          "type": "number",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 40,
+          "scope": "application",
+          "description": "正文字号（px）；0 跟随编辑器字号。"
+        },
+        "localReader.lineHeight": {
+          "type": "number",
+          "default": 1.8,
+          "minimum": 1.2,
+          "maximum": 3,
+          "scope": "application",
+          "description": "正文行高倍数。"
+        },
+        "localReader.panelReaderSide": {
+          "type": "string",
+          "enum": [
+            "right",
+            "left"
+          ],
+          "enumDescriptions": [
+            "左侧 Terminal，右侧阅读器",
+            "左侧阅读器，右侧 Terminal"
+          ],
+          "default": "right",
+          "scope": "application",
+          "description": "底部阅读器的位置；进入底部模式或修改时应用。"
+        }
+      }
+    },
+    "configurationDefaults": {
+      "terminal.integrated.commandsToSkipShell": [
+        "localReader.resume",
+        "localReader.hide"
+      ]
+    }
+  },
+  "dependencies": {
+    "fast-xml-parser": "^5.11.2",
+    "iconv-lite": "^0.7.3",
+    "parse5": "^8.0.1",
+    "proper-lockfile": "^4.1.2",
+    "yauzl": "^3.4.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "@types/node": "^22.20.5",
+    "@types/proper-lockfile": "^4.1.4",
+    "@types/vscode": "1.95",
+    "@types/yauzl": "^3.4.0",
+    "@vscode/test-electron": "^3.1.0",
+    "@vscode/vsce": "3.9.2",
+    "esbuild": "^0.28.2",
+    "fflate": "^0.8.3",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  },
+  "overrides": {
+    "@azure/identity": "4.13.0",
+    "uuid": "11.1.1"
+  }
+}
