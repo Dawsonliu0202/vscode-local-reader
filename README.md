@@ -1,90 +1,141 @@
-# Local Reader 本地阅读
+<h1 align="center">📖 Local Reader 本地阅读</h1>
 
-在 VS Code 中离线管理和阅读本地 TXT、EPUB，支持侧边栏、文件标签页和底部原生终端分栏。书籍、进度与阅读记录保存在本机，不需要账号或联网。
+<p align="center">在 VS Code 里，留一段安静的阅读时间。</p>
 
-## 安装与开始阅读
+<p align="center">
+  <a href="https://github.com/Dawsonliu0202/vscode-local-reader/releases/latest"><img src="https://img.shields.io/badge/version-v0.4.1-2aa198" alt="版本 v0.4.1"></a>
+  <img src="https://img.shields.io/badge/VS_Code-%E2%89%A5_1.95-007ACC" alt="VS Code 1.95 及以上">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-859900" alt="MIT 许可证"></a>
+</p>
 
-从 [GitHub Releases](https://github.com/Dawsonliu0202/vscode-local-reader/releases/latest) 下载最新 `.vsix` 安装包，源码可在仓库中浏览或下载。
+<p align="center">
+  <a href="https://github.com/Dawsonliu0202/vscode-local-reader/releases/latest">下载安装包</a> ·
+  <a href="#快速开始">快速开始</a> ·
+  <a href="#界面预览">界面预览</a> ·
+  <a href="#快捷操作">快捷操作</a>
+</p>
 
-1. 在 VS Code 扩展页面打开右上角 `…`，选择 **从 VSIX 安装**，选择 `local-reader-0.4.1.vsix`；旧版可直接覆盖升级，书库与记录保留。
-2. 点击左侧活动栏的 **Local Reader 书本图标**，在书架点击“导入书籍”。
-3. 选择一本或多本 `.txt` / `.epub`；导入完成后在书架点击书名或“继续”。
-4. 以后按 `Ctrl+Alt+R` 继续最近一本书，按 `Ctrl+Alt+H` 隐藏插件内容。
+离线管理和阅读本地 **EPUB / TXT**，支持侧边栏、文件标签页与真实终端分栏。自动保存阅读位置和有效时长，书籍与记录留在本机，无需账号或联网。
 
-也可以点击左侧活动栏新增的 **Local Reader 书本图标**，直接在侧栏进入书架管理，支持导入、筛选、改名、移除及查看统计。资源管理器中的 **Workspace Notes** 保留作为侧栏阅读模式。无需打开项目文件夹。
+![VS Code 中真实运行的阅读器与原生终端分栏](docs/images/terminal-reader.png)
 
-支持 VS Code 桌面版 1.95 及以上；主验收环境为 Windows、VS Code 1.144.0。macOS/Linux、浏览器版、Remote/WSL/SSH 和 Codespaces 尚未进行兼容性验收。
+<p align="center"><sub>Windows · VS Code 1.144.0 · Solarized Dark。示例中左侧为 Reader，右侧为真实 Terminal；左右位置可在阅读设置中切换。</sub></p>
 
-## 操作
+## 功能一览
 
-| 操作 | 方式 |
+| 功能 | 说明 |
 | --- | --- |
-| 继续阅读 | `Ctrl+Alt+R` |
-| 隐藏正文、书架、记录与统计 | `Ctrl+Alt+H` 或界面右上角 `—` |
-| 正文内快速隐藏 | `Esc`；有目录/菜单时先关闭弹层 |
-| 上一页 / 下一页 | 点击正文左/右侧分区、正文内 `Left` / `Right` 或顶部 `‹` / `›` |
-| 上一章 / 下一章 | 正文内 `Alt+Left` / `Alt+Right`，或顶部 `«` / `»` |
-| 章节目录 | 顶部 `≡` |
-| 切换模式、书架、统计、设置 | 顶部 `⋯` 菜单或命令面板；导入按钮仅在书架 |
-| 字号、行高与左右布局 | 点击正文顶部 `⚙`，或书架的“设置”标签；字号可跟随编辑器 |
+| 📚 本地书架 | 批量导入、按书名筛选、修改显示名、移除书籍；相同内容自动去重 |
+| 🪟 三种阅读模式 | 侧边栏 `Workspace Notes`、文件标签页 `notes.log`、底部 Terminal + Reader 分栏 |
+| 👆 轻量翻页 | 左右点击分区、方向键与翻页按钮；独立切章按钮和目录跳转 |
+| 🔖 进度恢复 | 自动保存正文位置，调整字号、窗口宽度或阅读模式后继续阅读 |
+| 📊 阅读统计 | 今日、最近 7 天、累计与单书时长；同书同日的阅读记录合并展示 |
+| ⚙️ 简洁设置 | 字体跟随 VS Code，调整字号、行高和底部分栏位置，实时预览 |
+| ⌨️ 快速隐藏 | 一键清除插件正文和管理页面，保留代码文件与真实终端 |
 
-macOS 对应组合为 `Cmd+Option+R/H`。所有命令均可在 VS Code 的“键盘快捷方式”中重新绑定。
+## 快速开始
 
-正文采用左右分页，滚轮、上下方向键、PageUp/PageDown 和空格不翻页。顶部显示当前章节和书名，底部显示“本章当前页 / 总页数”；页数随阅读区域、字号和行高变化，阅读位置仍按正文字符保存。
+1. 在 [Releases](https://github.com/Dawsonliu0202/vscode-local-reader/releases/latest) 下载 `local-reader-0.4.1.vsix`。
+2. 打开 VS Code 扩展视图，点击右上角 **`…` → 从 VSIX 安装**，选择下载的安装包。
+3. 点击左侧活动栏的 **Local Reader 书本图标**，在书架点击 **导入书籍**，选择 `.epub` 或 `.txt`。
+4. 点击书名或 **继续** 开始阅读；以后按 `Ctrl+Alt+R` 恢复，按 `Ctrl+Alt+H` 隐藏。
 
-正文左右各三分之一为点击翻页区：左侧上一页，右侧下一页；中间区域不翻页。拖动选字、清除已有选区和菜单打开时的背景点击不触发翻页。此操作在三种阅读模式下均生效，跨章节延续原有分页规则。
+**旧版可直接覆盖升级，书库与阅读记录保留。** 无需打开项目文件夹，也无需运行 npm。
 
-为使终端获得焦点时仍能使用打开/隐藏快捷键，插件提供了 `terminal.integrated.commandsToSkipShell` 的默认补充。如果你已自定义该配置，请在原有数组中加入 `localReader.resume` 和 `localReader.hide`；启用 `terminal.integrated.sendKeybindingsToShell` 也可能改变按键路由。普通翻页键只在阅读正文内处理，不接管真实终端输入。[VS Code 终端按键说明](https://code.visualstudio.com/docs/terminal/advanced#_keybinding-and-the-shell)。
+## 界面预览
 
-## 三种外观
+以下是当前版本 Webview 的实际渲染截图，使用示例书籍和演示统计数据；上方分栏图截自实际运行的 VS Code。
 
-- **侧边栏**：资源管理器中的 `Workspace Notes`，适合窄栏阅读。
-- **文件页面**：名为 `notes.log` 的只读阅读标签，不创建真实项目文件。
-- **底部终端 + 阅读分栏**：在原生 **Terminal / 终端** 标签内，默认左侧为可正常输入和执行命令的真实终端，右侧 `Task Output` 为阅读面板；可在阅读设置中对调左右位置，拖动原生分隔条调整比例。复用现有终端，没有时由 VS Code 创建默认终端。插件不会向终端自动输入命令。
+### 书架管理
 
-切换模式会保留正文位置，并清除旧容器内容。隐藏会移除底部阅读分栏、关闭插件自己的阅读标签，书架视图清空并收起；真实代码文件和终端保留。重启不会自动展示正文，需要主动继续阅读。书架入口按 VS Code 的侧栏恢复规则显示管理页面。
+书籍、进度、累计时长和最近阅读时间集中展示，导入入口只在书架出现。
 
-底部分栏复用 VS Code 内置的视图移动命令，将插件阅读视图放到原生 Terminal 容器内；底部标签因此显示为 **Terminal**，不再是旧版独立的 Task Output 标签。选择此模式时会把面板放到底部，以便左右并排。若曾手工移动或隐藏视图，可以重新选择该模式恢复容器位置，再拖动分隔条调整宽度。
+![本地书架：导入、筛选、阅读进度与书籍管理](docs/images/bookshelf.png)
 
-正常 Terminal + Reader 双栏会在进入底部模式时应用选定顺序；如果你在该容器里额外放入了其他扩展视图，仍可用 VS Code 的拖动操作整理布局。
+<table>
+  <tr>
+    <th width="50%">阅读记录与时长</th>
+    <th width="50%">阅读设置</th>
+  </tr>
+  <tr>
+    <td valign="top"><img src="docs/images/statistics.png" alt="阅读统计：今日时长、最近七天图表、单书时长与合并记录" width="100%"></td>
+    <td valign="top"><img src="docs/images/settings.png" alt="阅读设置：跟随字号、行高预览与终端分栏位置" width="100%"></td>
+  </tr>
+  <tr>
+    <td>同书同日合并记录，保留日期、累计时长和可确定的起止进度。</td>
+    <td>排版与分栏即时预览，支持保存、恢复默认及保存并继续阅读。</td>
+  </tr>
+</table>
 
-## 阅读设置
+## 快捷操作
 
-点击正文顶部 `⚙`、书架“设置”或执行 **Local Reader: 阅读设置**，进入插件自己的设置页：
+| 操作 | 快捷键 / 鼠标 |
+| --- | --- |
+| 继续最近一本书 | `Ctrl+Alt+R` |
+| 隐藏所有插件内容 | `Ctrl+Alt+H`，或右上角 `—` |
+| 正文内快速隐藏 | `Esc`；目录或菜单打开时先关闭弹层 |
+| 上一页 / 下一页 | `←` / `→`、顶部 `‹` / `›`，或点击正文左右分区 |
+| 上一章 / 下一章 | `Alt+←` / `Alt+→`，或顶部 `«` / `»` |
+| 打开目录 | 顶部 `≡` |
+| 调整字号、行高与分栏 | 顶部 `⚙`，或管理页的 **设置** |
+| 切换阅读模式、书架与统计 | 顶部 `⋯` 菜单或命令面板 |
 
-- 字号跟随编辑器，或自定义 8–40 px；行高 1.2–3.0 倍，文字预览即时更新。
-- 底部布局选择“左侧 Terminal · 右侧 Reader”（默认）或反向布局，并显示排列预览。
-- 点击“保存设置”后持久化；“保存并继续阅读”会应用设置并恢复当前书的位置。
-- “恢复默认”先还原预览，保存后生效。
+**点击分区：** 正文左侧三分之一为上一页，右侧三分之一为下一页，中间区域不翻页。拖动选字、清除已有选区及菜单打开时的背景点击不会误翻页。滚轮、上下方向键、PageUp/PageDown 和空格不翻页。
 
-设置页暂停阅读计时；布局在进入底部模式时应用。从 VS Code 通用设置修改 `localReader.panelReaderSide` 时，当前可见的底部分栏也会立即调整。
+顶部显示章节和书名，底部显示 **本章当前页 / 总页数**。页码随字号和阅读区域变化，保存的位置按正文字符确定。普通翻页键仅在正文内生效，不接管代码编辑器和真实终端输入。
 
-正文、管理界面和预览的字体族跟随 VS Code 界面默认字体，字号默认跟随编辑器。隐藏按钮会清除书名与正文，不提供系统级隐藏或磁盘数据加密。
+macOS 打开/隐藏对应 `Cmd+Option+R/H`；键位可在 VS Code 的“键盘快捷方式”中修改，平台兼容性范围见下方说明。
 
-## 书籍与记录
+## 格式与数据
 
-- TXT 支持 UTF-8、GBK/GB18030；编码回退时先选择预览正常的编码。其他编码需先在外部转换。
-- EPUB 支持无 DRM 的 EPUB 2/3 文字书，提取标题、正文与目录，不还原原版插图、复杂排版或固定版式。
-- 每本上限 50 MiB；EPUB 额外限制条目数和实际解压体积。
-- 相同内容不会重复导入；同名不同内容可共存。导入会保存副本，原文件移动后仍可读。
-- 书架可按书名筛选、修改显示书名或移除。移除会删除插件副本、该书进度、记录和累计时长，原始文件保留。
-- 进度表示当前正文位置，回翻时百分比会下降；到末尾显示 100%。
+- **TXT**：支持 UTF-8、GBK/GB18030；编码回退时可先预览再确认。
+- **EPUB**：支持无 DRM 的 EPUB 2/3 文字书，提取正文和目录，使用统一排版。
+- **大小与副本**：每本上限 50 MiB；导入保存本地副本，原文件移动后仍可阅读。
+- **时长口径**：仅在窗口前台、正文可见且最近 120 秒内有正文操作时累计。隐藏、失焦或空闲暂停；短于一分钟显示秒数，跨日按本地日期拆分。
+- **移除书籍**：删除插件副本、进度、记录与该书累计时长，原始文件保留。
 
-统计包括今日、最近 7 天、累计与单书时长，以及可按书筛选的阅读记录。记录按“同一本书、同一天”合并，显示日期、累计时长和可确定的首末进度；多次打开或隐藏不再产生重复列表项，原始会话保留。短于一分钟的时长显示秒数。
+<details>
+<summary><strong>数据存放与恢复</strong></summary>
 
-只在 **窗口前台、正文可见、最近 120 秒内有正文操作** 时累计；隐藏、失焦和空闲暂停。单纯移动鼠标或滚轮不算操作。内部按秒保存，跨午夜按系统本地日期拆分；异常退出可能丢失最近一个检查点（通常不超过 10 秒）。
+数据保存在 VS Code 分配的 `globalStorageUri` 中，不写入项目，不开启遥测，也不加入 Settings Sync。
 
-## 数据与恢复
+Windows 默认目录通常为 `%APPDATA%/Code/User/globalStorage/workspace-tools.local-reader/`；便携版或其他用户配置以 VS Code 实际位置为准。
 
-数据存放在 VS Code 分配给 `workspace-tools.local-reader` 的 `globalStorageUri` 中，不写入项目，不开启遥测，不加入 Settings Sync。
+| 文件 | 用途 |
+| --- | --- |
+| `state.json` | 书架、进度与原始阅读会话 |
+| `state.json.bak` | 上一份完整状态备份 |
+| `books/` | 导入副本与正文缓存 |
 
-Windows 默认用户目录通常为 `%APPDATA%/Code/User/globalStorage/workspace-tools.local-reader/`，其他配置/便携模式实际位置以 VS Code 为准。其中 `state.json` 为书架和记录，`state.json.bak` 为上一份完整备份，`books/` 为副本与缓存。
+缓存缺失时从副本重建，状态损坏时尝试备份；两者均损坏会保留目录并报错。多窗口写入使用文件锁，重新打开书架可读取最新数据。异常退出可能丢失最近一个检查点，通常不超过 10 秒。
 
-缓存缺失时会从副本重建；状态损坏时尝试备份，二者均损坏则显示错误并保留目录，不静默清空。多窗口写入使用文件锁，窗口间不实时刷新；重新打开书架读取最新数据。
+隐藏会清空插件内容、关闭自身阅读标签、收起书架并移除底部阅读分栏；真实终端和其他文件保留。重启后需主动继续阅读，不自动展示正文。本功能不提供系统级隐藏或磁盘数据加密。
+
+</details>
+
+<details>
+<summary><strong>终端分栏与快捷键设置</strong></summary>
+
+底部模式使用原生 Terminal 与阅读 Webview，分隔条可拖动，左右位置可在阅读设置中切换。插件复用已有终端，没有时创建默认终端，不会向 Shell 自动输入命令。文件页是只读 Webview，不创建真实项目文件。
+
+如果手动移动过视图，重新选择底部模式可恢复容器位置；容器中额外放入其他扩展视图时，可通过 VS Code 拖动整理。
+
+若自定义了 `terminal.integrated.commandsToSkipShell`，请在原有数组中加入 `localReader.resume` 和 `localReader.hide`。`terminal.integrated.sendKeybindingsToShell` 也可能影响终端内快捷键路由。[VS Code 官方说明](https://code.visualstudio.com/docs/terminal/advanced#_keybinding-and-the-shell)
+
+</details>
+
+<details>
+<summary><strong>支持环境与范围</strong></summary>
+
+支持 VS Code 桌面版 **1.95 及以上**，当前主要验证环境为 **Windows / VS Code 1.144.0**。macOS、Linux、浏览器版、Remote/WSL/SSH 与 Codespaces 尚未进行兼容性验收。
+
+当前支持 EPUB/TXT 文字阅读，不包含 PDF、MOBI、DRM 解密、固定版式、扫描书、原版插图与复杂排版还原，也不提供在线书城和云同步。
+
+</details>
 
 ## 开发与验证
 
-需要 Node.js 22 或更新的受支持版本，以及 npm。
+需要 Node.js 22 或更新的受支持版本，以及 npm。克隆项目后执行：
 
 ```sh
 npm ci
@@ -96,8 +147,15 @@ npm run test:host
 npm run package
 ```
 
-`test:ui` 使用已安装的 Microsoft Edge 无头运行；`test:host` 默认由官方测试工具下载隔离版 VS Code，也可设置 `VSCODE_EXECUTABLE_PATH` 指向现有 `Code.exe`。集成测试使用项目下 `.test-data/` 的独立配置，不向日常 VS Code 书架写入测试内容。Windows 可在 F5 启动配置中运行插件。
+`test:ui` 使用本机 Microsoft Edge 无头运行；`test:host` 使用隔离的 VS Code 配置，不向日常书架写入测试内容。也可用 `VSCODE_EXECUTABLE_PATH` 指定已有 `Code.exe`，Windows 下可按 F5 调试插件。
 
-源码入口为 `src/extension.ts`，正文解析在 `src/content.ts`，存储在 `src/storage.ts`，计时在 `src/tracker.ts`，视图控制在 `src/controller.ts`，页面在 `webview/`。
+| 文档 | 内容 |
+| --- | --- |
+| [功能 PRD](docs/PRD.md) | 功能与范围约定 |
+| [实现方案](docs/IMPLEMENTATION_PLAN.md) | 模块、存储与阅读流程 |
+| [验收记录](docs/VERIFICATION.md) | 已执行验证及兼容性范围 |
+| [更新记录](CHANGELOG.md) | 各版本变更 |
 
-源码目录中的 `docs/PRD.md`、`docs/IMPLEMENTATION_PLAN.md` 记录需求与实现边界，`docs/VERIFICATION.md` 记录验证结果。许可证为 MIT，打包依赖声明见 `THIRD_PARTY_NOTICES.txt`。
+## 许可证
+
+[MIT](LICENSE) · 运行时依赖声明见 [THIRD_PARTY_NOTICES.txt](THIRD_PARTY_NOTICES.txt)。
