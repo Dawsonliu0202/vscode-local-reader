@@ -3,7 +3,7 @@
 <p align="center">在 VS Code 里，留一段安静的阅读时间。</p>
 
 <p align="center">
-  <a href="https://github.com/Dawsonliu0202/vscode-local-reader/releases/latest"><img src="https://img.shields.io/badge/version-v0.4.1-2aa198" alt="版本 v0.4.1"></a>
+  <a href="https://github.com/Dawsonliu0202/vscode-local-reader/releases/latest"><img src="https://img.shields.io/badge/version-v0.4.2-2aa198" alt="版本 v0.4.2"></a>
   <img src="https://img.shields.io/badge/VS_Code-%E2%89%A5_1.95-007ACC" alt="VS Code 1.95 及以上">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-859900" alt="MIT 许可证"></a>
 </p>
@@ -27,7 +27,7 @@
 | --- | --- |
 | 📚 本地书架 | 批量导入、按书名筛选、修改显示名、移除书籍；相同内容自动去重 |
 | 🪟 三种阅读模式 | 侧边栏 `Workspace Notes`、文件标签页 `notes.log`、底部 Terminal + Reader 分栏 |
-| 👆 轻量翻页 | 左右点击分区、方向键与翻页按钮；独立切章按钮和目录跳转 |
+| 👆 轻量翻页 | 左右点击分区、方向键与翻页按钮；目录自动定位并高亮当前章节 |
 | 🔖 进度恢复 | 自动保存正文位置，调整字号、窗口宽度或阅读模式后继续阅读 |
 | 📊 阅读统计 | 今日、最近 7 天、累计与单书时长；同书同日的阅读记录合并展示 |
 | ⚙️ 简洁设置 | 字体跟随 VS Code，调整字号、行高和底部分栏位置，实时预览 |
@@ -35,7 +35,7 @@
 
 ## 快速开始
 
-1. 在 [Releases](https://github.com/Dawsonliu0202/vscode-local-reader/releases/latest) 下载 `local-reader-0.4.1.vsix`。
+1. 在 [Releases](https://github.com/Dawsonliu0202/vscode-local-reader/releases/latest) 下载 `.vsix` 安装包。
 2. 打开 VS Code 扩展视图，点击右上角 **`…` → 从 VSIX 安装**，选择下载的安装包。
 3. 点击左侧活动栏的 **Local Reader 书本图标**，在书架点击 **导入书籍**，选择 `.epub` 或 `.txt`。
 4. 点击书名或 **继续** 开始阅读；以后按 `Ctrl+Alt+R` 恢复，按 `Ctrl+Alt+H` 隐藏。
@@ -76,7 +76,7 @@
 | 正文内快速隐藏 | `Esc`；目录或菜单打开时先关闭弹层 |
 | 上一页 / 下一页 | `←` / `→`、顶部 `‹` / `›`，或点击正文左右分区 |
 | 上一章 / 下一章 | `Alt+←` / `Alt+→`，或顶部 `«` / `»` |
-| 打开目录 | 顶部 `≡` |
+| 打开目录 | 顶部 `≡`；自动定位并高亮当前阅读章节 |
 | 调整字号、行高与分栏 | 顶部 `⚙`，或管理页的 **设置** |
 | 切换阅读模式、书架与统计 | 顶部 `⋯` 菜单或命令面板 |
 

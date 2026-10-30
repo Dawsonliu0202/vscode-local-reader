@@ -12,16 +12,16 @@ export interface Position { sectionId: string; offset: number; atEnd: boolean }
 export interface Section { id: string; title: string; text: string; start: number }
 export interface TocItem { title: string; sectionId: string; offset: number }
 export interface Content { version: 1; id: string; title: string; author: string; sections: Section[]; toc: TocItem[]; totalLength: number }
-export interface Chapter { title: string; start: number; end: number; index: number; count: number }
+export interface Chapter { title: string; start: number; end: number; index: number; count: number; tocIndex: number }
 export function chapters(content: Content): Chapter[] {
-  const entries = new Map<number, string>();
-  for (const item of content.toc) {
+  const entries = new Map<number, { title: string; tocIndex: number }>();
+  for (const [tocIndex, item] of content.toc.entries()) {
     const s = content.sections.find(s => s.id === item.sectionId);
-    if (s && item.offset >= 0 && item.offset < s.text.length) entries.set(s.start + item.offset, item.title);
+    if (s && item.offset >= 0 && item.offset < s.text.length) entries.set(s.start + item.offset, { title: item.title, tocIndex });
   }
-  if (!entries.has(0)) entries.set(0, content.sections[0]?.title || '正文');
+  if (!entries.has(0)) entries.set(0, { title: content.sections[0]?.title || '正文', tocIndex: -1 });
   const sorted = [...entries].sort((a, b) => a[0] - b[0]).filter(([start]) => start < content.totalLength);
-  return sorted.map(([start, title], index) => ({ title, start, end: sorted[index + 1]?.[0] ?? content.totalLength, index, count: sorted.length }));
+  return sorted.map(([start, entry], index) => ({ ...entry, start, end: sorted[index + 1]?.[0] ?? content.totalLength, index, count: sorted.length }));
 }
 export function absolutePosition(content: Content, position: Position): number {
   return position.atEnd ? content.totalLength : (content.sections.find(s => s.id === position.sectionId)?.start ?? 0) + position.offset;

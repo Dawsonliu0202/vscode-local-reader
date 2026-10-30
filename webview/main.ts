@@ -48,10 +48,19 @@ function toggleToc() {
   document.getElementById('menu')?.remove();
   const toc = el('aside', 'toc'); toc.id = 'toc'; toc.setAttribute('aria-label', '章节目录');
   toc.append(el('div', 'section-label', '章节目录'), button('关闭', '关闭目录', () => { toc.remove(); readerView?.focus(); }));
-  for (const t of data.toc as TocItem[]) toc.append(button(t.title, t.title, () => {
-    reportPosition(); send('jump', { position: { sectionId: t.sectionId, offset: t.offset, atEnd: false } }); toc.remove();
-  }));
-  app.append(toc); toc.querySelector('button')?.focus();
+  let current: HTMLButtonElement | undefined;
+  for (const [index, t] of (data.toc as TocItem[]).entries()) {
+    const entry = button(t.title, t.title, () => {
+      reportPosition(); send('jump', { position: { sectionId: t.sectionId, offset: t.offset, atEnd: false } }); toc.remove();
+    });
+    if (index === data.chapter.tocIndex) { entry.setAttribute('aria-current', 'location'); current = entry; }
+    toc.append(entry);
+  }
+  app.append(toc);
+  if (current) {
+    current.focus({ preventScroll: true });
+    toc.scrollTop = Math.max(0, current.offsetTop - (toc.clientHeight - current.offsetHeight) / 2);
+  } else toc.querySelector('button')?.focus();
 }
 
 function renderReader() {

@@ -15,6 +15,61 @@ async function dispatch(page: Page, data: unknown) { await page.evaluate(data =>
 async function ready(page: Page, chapter?: string) { await page.waitForFunction("document.querySelector('.page-counter') && /^\\d+ \\/ \\d+$/.test(document.querySelector('.page-counter').textContent) && document.querySelector('.page-flow').style.width === Math.floor(document.querySelector('.page-window').clientWidth) + 'px'" + (chapter ? ' && document.querySelector(\'.chapter-title\').textContent === ' + JSON.stringify(chapter) : '')); }
 async function pageNumber(page: Page) { return String(await page.locator('.page-counter').textContent()).split(' / ').map(Number); }
 
+test('长目录自动定位并高亮当前章节，支持同名章节、长章分块和切章后重新打开', async () => {
+  const c = txtContent('d'.repeat(64), '目录定位示例', Array.from({ length: 140 }, (_, i) => `第${i + 1}章 山路与微光\n` + '阅读正文，保持章节位置。\n'.repeat(i === 72 ? 1500 : 20)).join('\n'));
+  c.toc.unshift({ ...c.toc[0], title: '卷一' });
+  c.toc[1].title = c.toc[73].title;
+  const list = chapters(c), text = c.sections.map(s => s.text).join('');
+  const target = list[72];
+  const payload = (absolute: number, mode = 'panel') => {
+    const position = positionAt(c, absolute), chapter = chapterAt(c, position);
+    return { ...reader(), bookId: c.id, title: c.title, mode, position, absolutePosition: absolutePosition(c, position), chapter: { ...chapter, text: text.slice(chapter.start, chapter.end) }, toc: c.toc };
+  };
+  let current = payload(target.start + 18000);
+  const browser = await chromium.launch({ channel: 'msedge', headless: true });
+  try {
+    const page = await browser.newPage({ viewport: { width: 480, height: 600 } }); const errors: string[] = [];
+    page.on('pageerror', e => errors.push(e.message));
+    await page.exposeFunction('postToHost', async (m: any) => {
+      if (m.type === 'pagePosition') { current.position = positionAt(c, m.absolute, m.atEnd); current.absolutePosition = m.absolute; }
+      if (m.type === 'jump') { current = payload(absolutePosition(c, m.position), current.mode); await dispatch(page, current); }
+      if (m.type === 'action' && m.action === 'nextChapter') { current = payload(list[current.chapter.index + 1].start, current.mode); await dispatch(page, current); }
+    });
+    await page.setContent('<!DOCTYPE html><html lang="zh-CN"><body><div id="app"></div></body></html>');
+    await page.evaluate("window.acquireVsCodeApi = function () { return { postMessage: function (m) { return window.postToHost(m); }, setState: function () {} }; }; document.documentElement.style.cssText = '--vscode-font-family: Segoe UI, Microsoft YaHei, sans-serif; --vscode-editor-background:#002b36; --vscode-foreground:#93a1a1; --vscode-menu-background:#00212b; --vscode-list-activeSelectionBackground:#073642; --vscode-list-activeSelectionForeground:#d9e2e3; --vscode-focusBorder:#2aa198';");
+    await page.addStyleTag({ path: path.resolve('dist/webview.css') }); await page.addScriptTag({ path: path.resolve('dist/webview.js') });
+    const selected = page.locator('#toc button[aria-current="location"]');
+    const assertCurrent = async (tocIndex: number, centered = false) => {
+      assert.equal(await selected.count(), 1);
+      assert.equal(await selected.evaluate(e => Array.from(e.parentElement!.querySelectorAll('button')).indexOf(e as HTMLButtonElement) - 1), tocIndex);
+      const item = (await selected.boundingBox())!, bounds = (await page.locator('#toc').boundingBox())!;
+      assert.ok(item.y >= bounds.y && item.y + item.height <= bounds.y + bounds.height, 'current chapter is fully visible');
+      if (centered) assert.ok(Math.abs(item.y + item.height / 2 - bounds.y - bounds.height / 2) < 4, 'middle chapters are centered');
+      assert.equal(await selected.evaluate(e => document.activeElement === e), true);
+      assert.equal(await page.evaluate('window.scrollY'), 0, 'only the directory scrolls');
+      assert.notEqual(await selected.evaluate(e => getComputedStyle(e).backgroundColor), 'rgba(0, 0, 0, 0)');
+    };
+    for (const mode of ['sidebar', 'editor', 'panel']) {
+      current = payload(target.start + 18000, mode); await dispatch(page, current); await ready(page);
+      await page.getByRole('button', { name: '目录', exact: true }).click(); await assertCurrent(target.tocIndex, true);
+      assert.equal(await selected.textContent(), target.title);
+      await page.locator('#toc').hover(); await page.mouse.wheel(0, -20000); await page.waitForFunction("document.getElementById('toc').scrollTop === 0");
+      await page.keyboard.press('Escape'); await page.getByRole('button', { name: '目录', exact: true }).click(); await assertCurrent(target.tocIndex, true);
+      await page.keyboard.press('Escape');
+    }
+    await page.getByRole('button', { name: '下一章', exact: true }).click(); await ready(page, list[73].title);
+    await page.getByRole('button', { name: '目录', exact: true }).click(); await assertCurrent(list[73].tocIndex, true);
+    const jump = list[100]; await page.locator('#toc button').nth(jump.tocIndex + 1).click(); await ready(page, jump.title);
+    await page.getByRole('button', { name: '目录', exact: true }).click(); await assertCurrent(jump.tocIndex, true);
+    await mkdir('.test-data/screenshots', { recursive: true }); await page.screenshot({ path: '.test-data/screenshots/toc-current-v042.png' });
+    for (const chapter of [list[0], list.at(-1)!]) {
+      current = payload(chapter.start); await dispatch(page, current); await ready(page);
+      await dispatch(page, { type: 'toc' }); await assertCurrent(chapter.tocIndex); await page.keyboard.press('Escape');
+    }
+    assert.deepEqual(errors, []);
+  } finally { await browser.close(); }
+});
+
 test('左右分区点击、分页阅读、滚轮禁用、章节导航、位置恢复与精简管理界面', async () => {
   const browser = await chromium.launch({ channel: 'msedge', headless: true });
   try {

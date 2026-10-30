@@ -143,3 +143,16 @@ test('章节由目录边界确定，跨存储分块仍属同章，绝对位置�
   const emoji = text.indexOf('😀'); assert.equal(absolutePosition(c, positionAt(c, emoji + 1)), emoji);
   assert.equal(positionAt(c, c.totalLength, true).atEnd, true);
 });
+
+test('当前目录项按正文锚点匹配，同名、重复锚点和目录顺序不影响定位', () => {
+  const c = txtContent(id, '目录示例', '第一章 起点\n' + '长章节的正文。\n'.repeat(4000) + '第二章 终点\n最后一段。');
+  const [first, second] = c.toc;
+  c.toc = [{ ...second, title: '同名章节' }, { ...first, title: '卷一' }, { ...first, title: '同名章节' }, { title: '无效项', sectionId: 'missing', offset: 0 }];
+  const list = chapters(c);
+  assert.equal(list[0].tocIndex, 2); assert.equal(list[1].tocIndex, 0);
+  assert.equal(chapterAt(c, positionAt(c, 20000)).tocIndex, 2, 'storage chunks remain in the same logical chapter');
+  assert.equal(chapterAt(c, positionAt(c, list[1].start)).tocIndex, 0);
+  assert.equal(chapterAt(c, positionAt(c, c.totalLength, true)).tocIndex, 0);
+  c.toc = [{ ...first, offset: 4 }];
+  assert.equal(chapterAt(c, positionAt(c, 0)).tocIndex, -1, 'unlisted front matter must not highlight an unrelated chapter');
+});

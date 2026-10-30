@@ -26,6 +26,7 @@ input, select { border: 1px solid var(--vscode-input-border, #7775); background:
 .menu, .toc { position: absolute; top: 44px; right: 6px; max-height: calc(100vh - 56px); overflow: auto; z-index: 5; background: var(--vscode-menu-background, #252526); border: 1px solid var(--vscode-menu-border, #8885); box-shadow: 0 4px 16px #0004; border-radius: 4px; padding: 5px; min-width: 180px; max-width: calc(100% - 12px); }
 .menu button, .toc button { display: block; width: 100%; text-align: left; white-space: normal; }
 .toc { left: 6px; }
+.toc button[aria-current="location"] { background: var(--vscode-list-activeSelectionBackground, #04395e); color: var(--vscode-list-activeSelectionForeground, #fff); border-left-color: var(--vscode-focusBorder, #007acc); font-weight: 600; }
 .section-label { padding: 8px 10px; font-weight: 600; }
 .management { max-width: 1000px; margin: auto; }
 .tabs { display: flex; align-items: center; gap: 3px; padding: 8px 12px; flex-wrap: wrap; border-bottom: 1px solid var(--vscode-panel-border, #8883); }
