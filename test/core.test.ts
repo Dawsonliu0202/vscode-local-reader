@@ -5,7 +5,7 @@ import * as path from 'node:path';
 import { tmpdir } from 'node:os';
 import iconv from 'iconv-lite';
 import { decodeTxt, txtContent, epubContent } from '../src/content';
-import { absolutePosition, Book, chapterAt, chapters, clampPosition, emptyState, localDate, positionAt, progress, readingRecords, sessionSeconds, statistics, validatePreferences } from '../src/model';
+import { absolutePosition, Book, chapterAt, chapters, clampPosition, emptyState, filterToc, localDate, positionAt, progress, readingRecords, sessionSeconds, statistics, validatePreferences } from '../src/model';
 import { Storage } from '../src/storage';
 import { Clock, Tracker } from '../src/tracker';
 import { epubFixture } from './fixtures';
@@ -14,6 +14,21 @@ test('阅读设置验证：默认跟随、左右布局与非法值隔离', () =>
   assert.deepEqual(validatePreferences({ fontSize: 0, lineHeight: 1.8, panelReaderSide: 'right', extra: 'ignored' }), { fontSize: 0, lineHeight: 1.8, panelReaderSide: 'right' });
   assert.equal(validatePreferences({ fontSize: 18, lineHeight: 2, panelReaderSide: 'left' }).panelReaderSide, 'left');
   for (const bad of [{ fontSize: 1, lineHeight: 1.8, panelReaderSide: 'right' }, { fontSize: 14, lineHeight: 9, panelReaderSide: 'left' }, { fontSize: 14, lineHeight: 1.8, panelReaderSide: 'other' }]) assert.throws(() => validatePreferences(bad));
+  for (const fontSize of [0, 8, 40]) for (const lineHeight of [1.2, 3]) assert.equal(validatePreferences({ fontSize, lineHeight, panelReaderSide: 'right' }).fontSize, fontSize);
+  for (const fontSize of [7, 41, 8.5, NaN, '20']) assert.throws(() => validatePreferences({ fontSize, lineHeight: 1.8, panelReaderSide: 'right' }));
+});
+test('目录筛选保留原始锚点与索引，支持长目录、同名、章号和全角查询', () => {
+  const toc = Array.from({ length: 1000 }, (_, i) => ({ title: `第${i + 1}章 山路`, sectionId: `s${i}`, offset: i * 2 }));
+  toc[720].title = toc[72].title;
+  const matches = filterToc(toc, ' 第７３章 ');
+  assert.deepEqual(matches.map(r => r.tocIndex), [72, 720]);
+  assert.equal(matches[1].item, toc[720]); assert.equal(matches[1].item.sectionId, 's720');
+  assert.ok(filterToc(toc, '721').some(r => r.tocIndex === 720));
+  assert.equal(filterToc(toc, '不存在').length, 0); assert.equal(filterToc(toc, '').length, 1000);
+  assert.equal(filterToc([{ title: 'EPILOGUE', sectionId: 'end', offset: 8 }], 'epilogue')[0].item.offset, 8);
+  for (const [title, query] of [['第七十三章 风起', '第73章'], ['第两千零八回', '2008'], ['第十万零三章', '100003'], ['第一〇二章', '102']]) {
+    assert.equal(filterToc([{ title, sectionId: 'chinese', offset: 4 }], query)[0]?.item.sectionId, 'chinese');
+  }
 });
 async function temp(t: any) { const dir = await mkdtemp(path.join(tmpdir(), 'local-reader-test-')); t.after(() => rm(dir, { recursive: true, force: true })); return dir; }
 function book(): Book {

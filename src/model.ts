@@ -11,6 +11,27 @@ export function validatePreferences(value: unknown): ReaderPreferences {
 export interface Position { sectionId: string; offset: number; atEnd: boolean }
 export interface Section { id: string; title: string; text: string; start: number }
 export interface TocItem { title: string; sectionId: string; offset: number }
+function searchableChapterTitle(title: string) {
+  return title.replace(/第([零〇一二三四五六七八九两十百千万]+)([章节卷回部篇])/g, (_, number: string, unit: string) => {
+    const digits: Record<string, number> = { 零: 0, 〇: 0, 一: 1, 二: 2, 两: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9 };
+    if (!/[十百千万]/.test(number)) return `第${Number([...number].map(c => digits[c]).join(''))}${unit}`;
+    const units: Record<string, number> = { 十: 10, 百: 100, 千: 1000, 万: 10000 };
+    let total = 0, group = 0, digit = 0;
+    for (const c of number) {
+      if (c in digits) digit = digits[c];
+      else if (c === '万') { total += (group + digit || 1) * units[c]; group = digit = 0; }
+      else { group += (digit || 1) * units[c]; digit = 0; }
+    }
+    return `第${total + group + digit}${unit}`;
+  });
+}
+export function filterToc(toc: TocItem[], query: string) {
+  const normalize = (value: string) => value.normalize('NFKC').trim().toLocaleLowerCase();
+  const term = normalize(query);
+  // Retain the original index and anchor, including aliases and same-name entries.
+  return toc.map((item, tocIndex) => ({ item, tocIndex })).filter(({ item, tocIndex }) =>
+    !term || normalize(item.title).includes(term) || searchableChapterTitle(normalize(item.title)).includes(searchableChapterTitle(term)) || String(tocIndex + 1).includes(term));
+}
 export interface Content { version: 1; id: string; title: string; author: string; sections: Section[]; toc: TocItem[]; totalLength: number }
 export interface Chapter { title: string; start: number; end: number; index: number; count: number; tocIndex: number }
 export function chapters(content: Content): Chapter[] {

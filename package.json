@@ -2,7 +2,7 @@
   "name": "local-reader",
   "displayName": "Local Reader 本地阅读",
   "description": "离线 EPUB/TXT 书架、原生终端分栏阅读、阅读记录与时长分析。",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "publisher": "workspace-tools",
   "repository": {
     "type": "git",
@@ -37,7 +37,7 @@
     "test": "tsx --test test/*.test.ts",
     "test:host": "node scripts/test-host.mjs",
     "vscode:prepublish": "npm run check && npm run build",
-    "package": "vsce package --no-dependencies --allow-missing-repository --out local-reader-0.4.2.vsix",
+    "package": "vsce package --no-dependencies --allow-missing-repository --out local-reader-0.5.0.vsix",
     "test:ui": "tsx --test test/ui.spec.ts"
   },
   "contributes": {
@@ -143,7 +143,8 @@
           "id": "localReader.sidebar",
           "name": "Workspace Notes",
           "type": "webview",
-          "visibility": "collapsed"
+          "visibility": "collapsed",
+          "initialSize": 40
         }
       ],
       "local-reader-output": [
@@ -167,17 +168,17 @@
       "view/title": [
         {
           "command": "localReader.resume",
-          "when": "view == localReader.sidebar || view == localReader.panel || view == localReader.libraryView",
+          "when": "view == localReader.libraryView",
           "group": "navigation"
         },
         {
           "command": "localReader.hide",
-          "when": "view == localReader.sidebar || view == localReader.panel || view == localReader.libraryView",
+          "when": "view == localReader.libraryView",
           "group": "navigation"
         },
         {
           "command": "localReader.library",
-          "when": "view == localReader.sidebar || view == localReader.panel || view == localReader.libraryView"
+          "when": "view == localReader.libraryView"
         }
       ]
     },

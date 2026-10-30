@@ -80,7 +80,7 @@ export class ReaderView {
     this.viewport.addEventListener('pointercancel', () => { press = undefined; });
     this.viewport.addEventListener('click', e => {
       const start = press; press = undefined;
-      if (!start || start.dragged || start.selected || e.button !== 0 || e.ctrlKey || e.metaKey || e.altKey || e.shiftKey || e.defaultPrevented || window.getSelection()?.isCollapsed === false || this.root.querySelector('.menu, .toc')) return;
+      if (!start || start.dragged || start.selected || e.button !== 0 || e.ctrlKey || e.metaKey || e.altKey || e.shiftKey || e.defaultPrevented || window.getSelection()?.isCollapsed === false || this.root.querySelector('.menu, .toc, .quick-settings')) return;
       const bounds = this.viewport.getBoundingClientRect(), x = e.clientX - bounds.left;
       if (x < bounds.width / 3) this.page(-1);
       else if (x >= bounds.width * 2 / 3) this.page(1);
@@ -130,6 +130,13 @@ export class ReaderView {
     } else if (direction > 0) { this.atEnd = true; this.anchor = this.data.chapter.end; this.reportPosition(); this.show(); }
   }
   reportPosition() { this.data.absolutePosition = this.anchor; this.callbacks.send('pagePosition', { absolute: this.anchor, atEnd: this.atEnd }); }
+  capturePosition() { return { absolute: this.anchor, atEnd: this.atEnd }; }
+  setTypography(settings: Pick<ReaderPayload['settings'], 'fontSize' | 'lineHeight'>, position = this.capturePosition()) {
+    this.anchor = position.absolute; this.atEnd = position.atEnd; this.shouldFocus = false;
+    this.data.settings = { ...this.data.settings, ...settings };
+    this.viewport.style.fontSize = `${settings.fontSize}px`; this.viewport.style.lineHeight = String(settings.lineHeight);
+    void this.layout();
+  }
   focus() { this.viewport.focus({ preventScroll: true }); }
   dispose() { ++this.generation; this.observer.disconnect(); document.body.classList.remove('reader-active'); }
 }

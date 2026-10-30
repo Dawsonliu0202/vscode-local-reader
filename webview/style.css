@@ -9,12 +9,14 @@ button.primary { background: var(--vscode-button-background, #0e639c); color: va
 button.primary:hover { background: var(--vscode-button-hoverBackground, #1177bb); }
 input, select { border: 1px solid var(--vscode-input-border, #7775); background: var(--vscode-input-background, #3c3c3c); color: var(--vscode-input-foreground, inherit); padding: 7px 10px; border-radius: 3px; }
 .placeholder { padding: 12px; color: var(--vscode-descriptionForeground, #888); font: 12px var(--vscode-editor-font-family, monospace); }
-.toolbar { min-height: 42px; display: flex; align-items: center; gap: 1px; padding: 0 4px; flex-shrink: 0; }
-.toolbar button { padding: 2px 4px; min-width: 20px; line-height: 24px; flex-shrink: 0; color: var(--vscode-descriptionForeground); }
-.reader-heading { flex: 1; min-width: 0; padding: 3px 5px; }
+.toolbar { height: 42px; display: grid; grid-template-columns: 102px minmax(0, 1fr) 102px; align-items: center; column-gap: 2px; padding: 0 4px; flex-shrink: 0; }
+.toolbar-group { display: flex; align-items: center; gap: 2px; }
+.toolbar-group:last-child { justify-content: flex-end; }
+.toolbar button { padding: 2px 4px; width: 24px; min-width: 24px; line-height: 24px; flex-shrink: 0; color: var(--vscode-descriptionForeground); }
+.reader-heading { width: 100%; min-width: 0; height: 38px; padding: 2px 4px; text-align: center; }
 .chapter-title, .book-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.chapter-title { font-weight: 600; font-size: 12px; }
-.book-name { color: var(--vscode-descriptionForeground); font-size: 10px; margin-top: 2px; }
+.chapter-title { font-weight: 600; font-size: 12px; line-height: 17px; }
+.book-name { color: var(--vscode-descriptionForeground); font-size: 10px; line-height: 13px; margin-top: 2px; }
 .reader { height: 100vh; display: flex; flex-direction: column; position: relative; }
 .reader-active { height: 100vh; overflow: hidden; }
 .viewport { flex: 1; overflow: hidden; min-height: 0; padding: 10px 14px; display: flex; flex-direction: column; }
@@ -23,9 +25,27 @@ input, select { border: 1px solid var(--vscode-input-border, #7775); background:
 .page-measure { visibility: hidden; pointer-events: none; }
 .page-counter { flex-shrink: 0; height: 22px; padding: 0 14px; text-align: right; color: var(--vscode-descriptionForeground); font-size: 10px; opacity: .8; }
 .panel .viewport { background: var(--vscode-terminal-background, var(--vscode-editor-background)); color: var(--vscode-terminal-foreground, var(--vscode-foreground)); padding-top: 6px; }
-.menu, .toc { position: absolute; top: 44px; right: 6px; max-height: calc(100vh - 56px); overflow: auto; z-index: 5; background: var(--vscode-menu-background, #252526); border: 1px solid var(--vscode-menu-border, #8885); box-shadow: 0 4px 16px #0004; border-radius: 4px; padding: 5px; min-width: 180px; max-width: calc(100% - 12px); }
+.menu, .toc, .quick-settings { position: absolute; top: 46px; right: 6px; max-height: calc(100% - 52px); overflow: auto; z-index: 5; background: var(--vscode-menu-background, #252526); border: 1px solid var(--vscode-menu-border, #8885); box-shadow: 0 4px 16px #0004; border-radius: 4px; padding: 5px; min-width: min(180px, calc(100% - 12px)); max-width: calc(100% - 12px); }
 .menu button, .toc button { display: block; width: 100%; text-align: left; white-space: normal; }
-.toc { left: 6px; }
+.toc { left: 6px; display: flex; flex-direction: column; overflow: hidden; padding: 0; }
+.toc-header { flex-shrink: 0; padding: 5px; border-bottom: 1px solid var(--vscode-panel-border, #8883); }
+.toc-title { display: flex; justify-content: space-between; align-items: center; gap: 4px; }
+.toc-title button { width: auto; white-space: nowrap; }
+.toc-search { display: block; width: 100%; min-width: 0; }
+.toc-actions { display: flex; gap: 4px; margin-top: 4px; }
+.toc-actions button { width: auto; }
+.toc-count { padding: 3px 10px; }
+.toc-list { min-height: 0; overflow: auto; overscroll-behavior: contain; padding: 5px; }
+.toc-list button { overflow-wrap: anywhere; }
+.toc-list .toc-selected { outline: 1px solid var(--vscode-focusBorder, #007acc); outline-offset: -2px; }
+.toc-empty { padding: 8px 10px; }
+.toc-empty button { width: auto; }
+.quick-settings { width: 310px; display: flex; flex-direction: column; gap: 10px; padding: 10px; }
+.quick-settings .section-label { padding: 0; }
+.quick-settings input[type=number], .quick-settings input[type=range] { width: 100%; min-width: 0; }
+.quick-settings input[type=range] { padding: 0; accent-color: var(--vscode-focusBorder, #007acc); }
+.compact-action { display: none !important; }
+[hidden] { display: none !important; }
 .toc button[aria-current="location"] { background: var(--vscode-list-activeSelectionBackground, #04395e); color: var(--vscode-list-activeSelectionForeground, #fff); border-left-color: var(--vscode-focusBorder, #007acc); font-weight: 600; }
 .section-label { padding: 8px 10px; font-weight: 600; }
 .management { max-width: 1000px; margin: auto; }
@@ -75,4 +95,9 @@ progress { width: min(200px, 65%); height: 5px; accent-color: var(--vscode-progr
 .settings-status { margin: 0; color: var(--vscode-descriptionForeground); }
 .settings-status.error { color: var(--vscode-errorForeground, #f88); }
 button:disabled { cursor: default; opacity: .5; }
+@media (max-width: 479px) { .toolbar { grid-template-columns: 76px minmax(0, 1fr) 76px; } .toolbar .expanded-action { display: none; } .menu .compact-action { display: block !important; } }
+@media (max-height: 200px) {
+  .viewport, .panel .viewport { padding-top: 2px; padding-bottom: 2px; }
+  .page-counter { height: 18px; }
+}
 @media (max-width: 520px) { .management-body { padding: 12px; } .tabs { padding: 10px 12px; } .metrics { grid-template-columns: 1fr; gap: 6px; } .metric { padding: 12px; } .metric strong { margin-top: 5px; } .book-row { align-items: flex-start; } .row-actions { max-width: 70px; } .chart { gap: 4px; } }

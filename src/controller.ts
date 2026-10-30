@@ -163,7 +163,8 @@ export class ReaderController implements vscode.Disposable {
   private readingVisible() { return this.screen === 'reader' && this.rendered?.key === this.active && this.rendered.screen === 'reader' && !!this.surfaces.get(this.active)?.visible(); }
   private readerSettings() {
     const c = vscode.workspace.getConfiguration('localReader'), editor = vscode.workspace.getConfiguration('editor');
-    return { fontSize: c.get<number>('fontSize', 0) || editor.get<number>('fontSize', 14), lineHeight: c.get<number>('lineHeight', 1.8), fontFamily: 'var(--vscode-font-family, sans-serif)' };
+    const editorFontSize = editor.get<number>('fontSize', 14);
+    return { fontSize: c.get<number>('fontSize', 0) || editorFontSize, editorFontSize, lineHeight: c.get<number>('lineHeight', 1.8), fontFamily: 'var(--vscode-font-family, sans-serif)' };
   }
   preferences(): ReaderPreferences {
     const c = vscode.workspace.getConfiguration('localReader');
@@ -184,11 +185,12 @@ export class ReaderController implements vscode.Disposable {
   }
   async updatePreferences(raw: unknown) {
     const values = validatePreferences(raw), c = vscode.workspace.getConfiguration('localReader');
+    const sideChanged = c.get('panelReaderSide') !== values.panelReaderSide;
     this.updatingSettings = true;
     try {
       for (const key of ['fontSize', 'lineHeight', 'panelReaderSide'] as const) if (c.get(key) !== values[key]) await c.update(key, values[key], vscode.ConfigurationTarget.Global);
     } finally { this.updatingSettings = false; }
-    if (this.screen === 'reader' && this.mode === 'panel') await this.positionPanelReader();
+    if (sideChanged && this.screen === 'reader' && this.mode === 'panel') await this.positionPanelReader();
     this.renderReader();
     if (this.screen === 'settings') await this.renderManagement();
   }
@@ -198,7 +200,7 @@ export class ReaderController implements vscode.Disposable {
     const text = this.content.sections.filter(s => s.start < chapter.end && s.start + s.text.length > chapter.start).map(s => s.text.slice(Math.max(0, chapter.start - s.start), chapter.end - s.start)).join('');
     this.send(this.active, { type: 'reader', token: this.token, mode: this.mode, bookId: this.book.id, title: this.book.displayTitle,
       position: this.position, absolutePosition: absolutePosition(this.content, this.position), chapter: { ...chapter, text },
-      toc: this.content.toc, progress: progress(this.book, this.position), settings: this.readerSettings() });
+      toc: this.content.toc, progress: progress(this.book, this.position), settings: this.readerSettings(), preferences: this.preferences() });
   }
   private schedulePosition(position: Position) {
     if (!this.book) return;
@@ -301,6 +303,16 @@ export class ReaderController implements vscode.Disposable {
         if (m.resume && this.book) await this.openBook(this.book.id);
         else this.send('library', { type: 'settingsSaved', token: this.token });
       } catch (e) { this.send('library', { type: 'settingsError', token: this.token, message: e instanceof Error ? e.message : '设置保存失败' }); }
+      return;
+    }
+    if (m.type === 'saveReaderSettings' && this.screen === 'reader' && m.bookId === this.book?.id && typeof m.requestId === 'string' && m.requestId.length <= 100) {
+      const token = this.token;
+      try {
+        // Quick settings may change typography only; preserve the existing panel side.
+        await this.updatePreferences({ ...this.preferences(), fontSize: m.values?.fontSize, lineHeight: m.values?.lineHeight });
+      } catch (e) {
+        if (this.token === token && this.screen === 'reader') this.send(key, { type: 'readerSettingsError', token, requestId: m.requestId, message: e instanceof Error ? e.message : '设置保存失败' });
+      }
       return;
     }
     if (m.type === 'action') {
