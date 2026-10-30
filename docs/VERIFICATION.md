@@ -1,6 +1,16 @@
 # 实现与验收记录
 
-日期：2026-10-30；版本：0.5.0。
+日期：2026-10-30；版本：0.5.1。
+
+## 0.5.1 Marketplace 准备
+
+按用户要求将发布者 ID 改为 `Dawson`，生成 `Dawson.local-reader` 的 v0.5.1 安装包，保留已发布的 v0.5.0 安装包与 GitHub Release。新增 `media/icon.png`（256×256）、`media/publisher-icon.png`（128×128）与 `media/icon.svg`，图标采用深青底、米白书页与金色书签。图标通过原生矢量设计和本地 PNG 导出制作，没有引入运行时依赖。
+
+发布者表单已填写，但尚未创建发布者或上传扩展。浏览器文件上传要求 ChatGPT 浏览器扩展开启本地文件 URL 访问；系统选择器操作因无法可靠识别当前浏览器网址而被安全检查停止。创建发布者还会接受 Visual Studio Marketplace Publisher Agreement，需用户在提交前确认。
+
+本轮只改变品牌资源与发布元数据，阅读实现沿用 v0.5.0。不同发布者属于不同扩展标识，旧 `workspace-tools.local-reader` 的书架和记录不自动迁移；旧目录与旧安装包均保留。后续同一 `Dawson.local-reader` 标识下的版本沿用既有存储格式。
+
+TypeScript、17 项核心测试、VS Code 宿主集成测试和 VSIX 打包通过。已读取包内清单确认 `Dawson.local-reader@0.5.1`、PNG 图标路径与 256×256 尺寸；128×128 发布者 Logo 另行导出。证据为 `.test-data/core-marketplace-v051.log`、`host-marketplace-v051.log` 和 `package-marketplace-v051.log`。因没有修改阅读界面，本轮未重复 v0.5.0 已通过的四组浏览器测试。
 
 ## 0.5.0 本轮验收
 

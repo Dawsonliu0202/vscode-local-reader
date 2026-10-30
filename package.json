@@ -2,8 +2,20 @@
   "name": "local-reader",
   "displayName": "Local Reader 本地阅读",
   "description": "离线 EPUB/TXT 书架、原生终端分栏阅读、阅读记录与时长分析。",
-  "version": "0.5.0",
-  "publisher": "workspace-tools",
+  "version": "0.5.1",
+  "publisher": "Dawson",
+  "icon": "media/icon.png",
+  "galleryBanner": {
+    "color": "#073c43",
+    "theme": "dark"
+  },
+  "homepage": "https://github.com/Dawsonliu0202/vscode-local-reader#readme",
+  "bugs": {
+    "url": "https://github.com/Dawsonliu0202/vscode-local-reader/issues"
+  },
+  "keywords": [
+    "epub", "txt", "reader", "ebook", "offline", "bookshelf", "阅读", "电子书"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/Dawsonliu0202/vscode-local-reader.git"
@@ -37,7 +49,7 @@
     "test": "tsx --test test/*.test.ts",
     "test:host": "node scripts/test-host.mjs",
     "vscode:prepublish": "npm run check && npm run build",
-    "package": "vsce package --no-dependencies --allow-missing-repository --out local-reader-0.5.0.vsix",
+    "package": "vsce package --no-dependencies --allow-missing-repository --out local-reader-0.5.1.vsix",
     "test:ui": "tsx --test test/ui.spec.ts"
   },
   "contributes": {

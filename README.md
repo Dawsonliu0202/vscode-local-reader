@@ -3,13 +3,13 @@
 <p align="center">在 VS Code 里，留一段安静的阅读时间。</p>
 
 <p align="center">
-  <a href="https://github.com/Dawsonliu0202/vscode-local-reader/releases/latest"><img src="https://img.shields.io/badge/version-v0.5.0-2aa198" alt="版本 v0.5.0"></a>
+  <a href="https://marketplace.visualstudio.com/items?itemName=Dawson.local-reader"><img src="https://img.shields.io/badge/version-v0.5.1-2aa198" alt="版本 v0.5.1"></a>
   <img src="https://img.shields.io/badge/VS_Code-%E2%89%A5_1.95-007ACC" alt="VS Code 1.95 及以上">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-859900" alt="MIT 许可证"></a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/Dawsonliu0202/vscode-local-reader/releases/latest">下载安装包</a> ·
+  <a href="https://marketplace.visualstudio.com/items?itemName=Dawson.local-reader">Marketplace 安装</a> ·
   <a href="#快速开始">快速开始</a> ·
   <a href="#界面预览">界面预览</a> ·
   <a href="#快捷操作">快捷操作</a>
@@ -35,12 +35,14 @@
 
 ## 快速开始
 
-1. 在 [Releases](https://github.com/Dawsonliu0202/vscode-local-reader/releases/latest) 下载 `.vsix` 安装包。
-2. 打开 VS Code 扩展视图，点击右上角 **`…` → 从 VSIX 安装**，选择下载的安装包。
+1. 商店发布完成后，在 VS Code 扩展视图搜索 **`@id:Dawson.local-reader`**，或打开 [Marketplace 页面](https://marketplace.visualstudio.com/items?itemName=Dawson.local-reader)。
+2. 点击 **安装**；离线安装可使用 `local-reader-0.5.1.vsix`，通过扩展视图右上角 **`…` → 从 VSIX 安装** 选择本地安装包。
 3. 点击左侧活动栏的 **Local Reader 书本图标**，在书架点击 **导入书籍**，选择 `.epub` 或 `.txt`。
 4. 点击书名或 **继续** 开始阅读；以后按 `Ctrl+Alt+R` 恢复，按 `Ctrl+Alt+H` 隐藏。
 
-**旧版可直接覆盖升级，书库与阅读记录保留。** 无需打开项目文件夹，也无需运行 npm。
+**同一扩展标识下可覆盖升级，书库与阅读记录保留。** 无需打开项目文件夹，也无需运行 npm。
+
+商店版使用发布者 **Dawson**，完整标识为 `Dawson.local-reader`。早期 v0.5.0 及以前的本地包使用 `workspace-tools.local-reader`，VS Code 会将它们视为两个扩展；首次使用商店版前，请先禁用旧扩展，避免重复注册命令和视图。旧书架和记录保留在原扩展的数据目录，不会自动迁移到商店版。
 
 ## 界面预览
 
@@ -105,7 +107,7 @@ macOS 打开/隐藏对应 `Cmd+Option+R/H`；键位可在 VS Code 的“键盘�
 
 数据保存在 VS Code 分配的 `globalStorageUri` 中，不写入项目，不开启遥测，也不加入 Settings Sync。
 
-Windows 默认目录通常为 `%APPDATA%/Code/User/globalStorage/workspace-tools.local-reader/`；便携版或其他用户配置以 VS Code 实际位置为准。
+Windows 默认目录通常为 `%APPDATA%/Code/User/globalStorage/Dawson.local-reader/`（目录大小写以 VS Code 实际创建为准）；早期本地版本使用 `workspace-tools.local-reader/`。便携版或其他用户配置以 VS Code 实际位置为准。
 
 | 文件 | 用途 |
 | --- | --- |

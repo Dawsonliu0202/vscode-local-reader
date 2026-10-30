@@ -5,7 +5,8 @@ import { tmpdir } from 'node:os';
 import * as path from 'node:path';
 import type { ReaderController } from '../src/controller';
 export async function run() {
-  const extension = vscode.extensions.getExtension<ReaderController>('workspace-tools.local-reader'); assert.ok(extension);
+  const manifest = JSON.parse(await readFile(path.join(__dirname, '..', 'package.json'), 'utf8')) as { publisher: string; name: string };
+  const extension = vscode.extensions.getExtension<ReaderController>(`${manifest.publisher}.${manifest.name}`); assert.ok(extension);
   const extensionPath = extension.extensionPath;
   const titleActions = extension.packageJSON.contributes.menus['view/title'];
   assert.ok(titleActions.every((item: { when: string }) => item.when === 'view == localReader.libraryView'), 'reading panes must not duplicate the Webview toolbar actions');
